@@ -1,4 +1,10 @@
-Structura 
+Structura
+
+
+
+
+
+
 Meniu Main --- "Selectați o opțiune:"
         echo "1. Găsire fișiere mai vechi"
         echo "2. Mutare fișiere"
