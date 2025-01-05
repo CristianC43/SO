@@ -51,6 +51,7 @@ monitorizare(){
 			echo "0 20 * * 1 find $1 -mtime +60 -type f ! -name "*.old" -exec mv {} {}.old \;" | crontab  
 			;;
 		3)
+  			#TODO: VERIFICA DACA A FOST DEJA MARCAT CA DEPERCATED
 			echo "0 20 * * 1 find $1 -mtime +60 -type f -exec sed -i '1s/^/#### DEPERCATED ####\n/' {} \;" | crontab 
 			;;
 		*)
@@ -122,6 +123,7 @@ if [[ $# -eq 0 ]]; then
 				;;
 			2)  # Mutare fisiere
 				echo "ceva"
+    # TODO: FUNCTIE MUTARE FISIERE
 				;;
 			3)	# Monitorizare
 				VALOARE_CONFIG=1 # Valoare default
@@ -139,7 +141,9 @@ if [[ $# -eq 0 ]]; then
 	done
 else
     # Rularea programului cu argumente pe linia de comanda
-	echo "ceva"
+# TODO: ARGUMENTE LINIE COMANDA	
+ echo "ceva"
 fi
 
 
+#TODO: LOGURI
