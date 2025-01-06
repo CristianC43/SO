@@ -1,0 +1,25 @@
+Optiune invalida
+Optiune invalida
+Optiune invalida
+Optiune invalida
+Optiune invalida
+Acest program ofera backup avansat, printre optiunile acestuia se afla gasirea tuturor fisierelor mai vechi de o data calendaristica, mutarea fisierelor, stergerea fisierelor si multe altele. Pentru mai multe detalii accesati usage astfel: ./program.sh -u sau ./program.sh --usage
+			shift
+		;;
+	
+		--debug)
+			shift
+			if [ -h !=  ]; then
+				debug_mode=-h
+				shift
+			else
+			   log Argumente
+Nu mai exista optiuni
+Acest program ofera backup avansat, printre optiunile acestuia se afla gasirea tuturor fisierelor mai vechi de o data calendaristica, mutarea fisierelor, stergerea fisierelor si multe altele. Pentru mai multe detalii accesati usage astfel: ./program.sh -u sau ./program.sh --usage
+Nu mai exista optiuni
+Acest program ofera backup avansat, printre optiunile acestuia se afla gasirea tuturor fisierelor mai vechi de o data calendaristica, mutarea fisierelor, stergerea fisierelor si multe altele. Pentru mai multe detalii accesati usage astfel: ./program.sh -u sau ./program.sh --usage
+Nu mai exista optiuni
+Acest program ofera backup avansat, printre optiunile acestuia se afla gasirea tuturor fisierelor mai vechi de o data calendaristica, mutarea fisierelor, stergerea fisierelor si multe altele. Pentru mai multe detalii accesati usage astfel: ./program.sh -u sau ./program.sh --usage
+Nu mai exista optiuni
+Nu mai exista optiuni
+Nu mai exista optiuni
