@@ -58,7 +58,7 @@ monitorizare(){
 		*)
 			;;
 	esac
-
+}
 
 
 # Functie meniu de configurare
@@ -156,3 +156,4 @@ else
     # Rularea programului cu argumente pe linia de comanda
 	echo "ceva"
 fi
+
