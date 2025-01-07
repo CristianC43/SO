@@ -5,6 +5,9 @@ log() {
         echo "$1" >> out.log
 }
 
+#Functia mutare ofera optiuni pentru mutare intr-un alt director sau salvarea in cloud a fisierului
+#Aceasta verifica existenta fisierului si a directorului inainte de a face orice alta operatiune pentru a diminiua sansa de a aparea erori
+#Optiunea Iesire intoarce utilizatorul la meniul principal in cazul meniului interactiv sau opreste porgramul in cazul utilizarii cu argumente in linia de comanda
 mutare() {
 while true; do
 echo "Selectati o optiune din cele de mai jos!"
@@ -16,7 +19,7 @@ select optiune in "Mutare fisier in alt director" "Mutare fisier in github" "Ies
   	    if [[ -f $nume_fis && ! -z $nume_fis ]]; then
 		echo "Selectati o optiune din cele de mai jos!"
    	    else
-		 echo "Nu exista un fisier cu acest nume!"	
+		 log "Nu exista un fisier cu acest nume!"	
 		 break
 	    fi
 	fi
@@ -27,14 +30,14 @@ select optiune in "Mutare fisier in alt director" "Mutare fisier in github" "Ies
 					if [ -d "$dir_dest" ]; then
 						director_initial_fis=$(dirname "$nume_fis")
 					if [ "$director_initial_fis" == "$dir_dest" ]; then
-						echo "Fisierul se afla deja in directorul furnizat!"
+						log "Fisierul se afla deja in directorul furnizat!"
 					else 
 						mv "$nume_fis" "$dir_dest"
                                                 echo "Fisierul a fost mutat cu succes"
 					fi
 
 					else 
-						echo "Directorul furnizat nu exista!" 
+						log "Directorul furnizat nu exista!" 
 					fi
 					break
 					;;	
@@ -62,7 +65,7 @@ select optiune in "Mutare fisier in alt director" "Mutare fisier in github" "Ies
 				return 0
 				;;
 			*)
-			echo "Optiune invalida"
+			log "Optiune invalida"
 			break
 			;;
 		esac
@@ -102,7 +105,7 @@ cautare(){
 	            n=$(( n * 365 ))
 	            find $1 -mtime +$n -type f -exec echo {} \;
 	    else # Formatul nu este acceptat
-	            echo "Format invalid, foloseste --help pentru ajutor" >&2
+	            log "Format invalid, foloseste --help pentru ajutor" >&2
 		fi
 }
 
@@ -114,22 +117,25 @@ cautare(){
 monitorizare(){
 	case $2 in
 		1)
-			echo "0 20 * * 1 find $1 -mtime +60 -type f -exec rm {} \;" | crontab 
+		  #crontab -l listeaza sarcinile cron existente in crontab pentru a le adauga alaturi de noua sarcina, crontab - sterge sarcinile existente si adauga sarcinile pe care le primeste in crontab        
+			(crontab -l 2>>out.log; echo "0 20 * * 1 find $1 -mtime +60 -type f -exec rm {} \;") | crontab -
+			echo "Monitorizare adaugata"
 			;;
 		2)
-			echo "0 20 * * 1 find $1 -mtime +60 -type f ! -name "*.old" -exec mv {} {}.old \;" | crontab  
+			(crontab -l 2>>out.log; echo "0 20 * * 1 find $1 -mtime +60 -type f ! -name "*.old" -exec mv {} {}.old \;") | crontab -  
 			;;
 		3)
-			echo "0 20 * * 1 find $1 -mtime +60 -type f -exec sed -i '1s/^/#### DEPERCATED ####\n/' {} \;" | crontab 
+			(crontab -l 2>>out.log; echo "0 20 * * 1 find $1 -mtime +60 -type f -exec sed -i '1s/^/#### DEPRECATED ####\n/' {} \;") | crontab - 
 			;;
 		4)
-			echo "9 1 * * 2 find $1 -mtime +1 -type f -exec chmod u-x,g-x,o-x {} \;" | crontab
+			(crontab -l 2>>out.log; echo "9 1 * * 2 find $1 -mtime +1 -type f -exec chmod u-x,g-x,o-x {} \;") | crontab -	
 			;;
 		5)
 			test -f archive.tar || touch archive.tar # Se va creea o arhiva daca nu exista deja
-			echo "0 20 * * 1 find $1 -mtime +60 -type f -exec tar -rvf archive.tar {} \;" | crontab
+			(crontab -l 2>>out.log; echo "0 20 * * 1 find $1 -mtime +60 -type f -exec tar -rvf archive.tar {} \;") | crontab -
 			;;			
 		*)
+			log "Optiune invalida"
 			;;
 	esac
 }
@@ -143,44 +149,40 @@ config(){
 	    opt1="Stergere fisiere"
 	    opt2="Redenumire fisiere extensia .old"
 	    opt3="Adaugare linie de ### DEPERCATED ### pe prima linie a fisierelor"
-		opt4="Luare permisiune executare"
-		opt5="Arhivare fisiere"
-	    optEXIT="Inapoi"
+	    opt4="Luare permisiune executare"
+	    opt5="Arhivare fisiere"
+	    optEXIT="Iesire"
 
 	    select optiune in "$opt1" "$opt2" "$opt3" "$opt4" "$opt5" "$optEXIT"; do
 	    	case $REPLY in
-	        	1)	# Stergere fisiere
+	           1)	# Stergere fisiere
 					monitorizare $1 1 
 					echo "Monitorizarea directorului $1 a inceput"
-					break
-	                ;;
-                2)  # Redenumire fisiere extensia .old
+					;;
+	            
+               	    2)  # Redenumire fisiere extensia .old
 					monitorizare $1 2
 					echo "Monitorizarea directorului $1 a inceput"
-                    break
 					;;
-	            3)  # Adaugare linie de ### DEPERCATED ### pe prima linie a fisierelor
+	            3)  # Adaugare linie de ### DEPRECATED ### pe prima linie a fisierelor
 					monitorizare $1 3
 					echo "Monitorizarea directorului $1 a inceput"
-	                break
 	                ;;
 	            4)
 	            	monitorizare $1 4
 	            	echo "Monitorizarea directorului $1 a inceput"
-	                break
 	                ;;
 	            5)
 	            	monitorizare $1 5
-	           	 	echo "Monitorizarea directorului $1 a inceput"
-	                break
+	           	echo "Monitorizarea directorului $1 a inceput"
 	                ;;
-	            6)	# Inapoi
-	            	echo "Monitorizare anulata"
-					break
+	            6)	# Iesire
+	            	echo "Iesire"
+			break
 	                ;;
 
 	            *)
-	                echo "Cod de configurare invalid" >&2
+	                log "Cod de configurare invalid" >&2
 	                ;;
 	                esac
 	        done
@@ -247,7 +249,7 @@ else
 				shift
 			else
 			   log "Argumente insuficiente!"
-			   exit 0
+			   exit 1
 			fi
 		;;
 	     --cautare)
@@ -257,7 +259,7 @@ else
 			shift
 		else 
 			log "Argumente insuficiente"
-			exit 0
+			exit 1
 		fi
 		;;
 	    --mutare)
@@ -271,27 +273,10 @@ else
 			shift
                 else 
                         log "Argumente insuficiente"
-                        exit 0
+                        exit 1
                 fi
 		;;
-	# --monitorizare)
-	# 	shift
-	# 	if [ "$1" != "" ]; then
- #                  arg1="$1"
-	# 	  shift    
-	# 	  if [ "$1" != "" ]; then
-	# 		monitorizare "$arg1" "$1"
-	# 		shift
-	# 	  else 
-	# 		log "Argumente insuficiente"	
-	# 	  	exit 0
-	# 	   fi
- #                else 
- #                        log "Argumente insuficiente"
- #                        exit 0
- #                fi
-	# 	;;	
- 
+
 	#Mai trebuie modificat cu functiile care o sa se adauge
 	-u|--usage) 
 		echo "Utilizare: ./program [-h|--help] [--debug on|off] [--cautare path] [--mutare] [--config path] [--monitorizare path tip_comanda] [--usage]"					
