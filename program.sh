@@ -274,23 +274,24 @@ else
                         exit 0
                 fi
 		;;
-	--monitorizare)
-		shift
-		if [ "$1" != "" ]; then
-                  arg1="$1"
-		  shift    
-		  if [ "$1" != "" ]; then
-			monitorizare "$arg1" "$1"
-			shift
-		  else 
-			log "Argumente insuficiente"	
-		  	exit 0
-		   fi
-                else 
-                        log "Argumente insuficiente"
-                        exit 0
-                fi
-		;;	
+	# --monitorizare)
+	# 	shift
+	# 	if [ "$1" != "" ]; then
+ #                  arg1="$1"
+	# 	  shift    
+	# 	  if [ "$1" != "" ]; then
+	# 		monitorizare "$arg1" "$1"
+	# 		shift
+	# 	  else 
+	# 		log "Argumente insuficiente"	
+	# 	  	exit 0
+	# 	   fi
+ #                else 
+ #                        log "Argumente insuficiente"
+ #                        exit 0
+ #                fi
+	# 	;;	
+ 
 	#Mai trebuie modificat cu functiile care o sa se adauge
 	-u|--usage) 
 		echo "Utilizare: ./program [-h|--help] [--debug on|off] [--cautare path] [--mutare] [--config path] [--monitorizare path tip_comanda] [--usage]"					
