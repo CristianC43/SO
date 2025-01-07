@@ -25,22 +25,25 @@ select optiune in "Mutare fisier in alt director" "Mutare fisier in github" "Ies
 	fi
 		case $optiune in
 			"Mutare fisier in alt director")
-					echo "Introduceti calea spre directorul unde doriti sa mutati fisierul: "
-					read dir_dest
-					if [ -d "$dir_dest" ]; then
-						director_initial_fis=$(dirname "$nume_fis")
+				echo "Introduceti calea spre directorul unde doriti sa mutati fisierul: "
+				read dir_dest
+				if [ -d "$dir_dest" ]; then
+				     if [[ -x "$dir_dest" && -w "$dir_dest" ]]; then
+					director_initial_fis=$(dirname "$nume_fis")
 					if [ "$director_initial_fis" == "$dir_dest" ]; then
 						log "Fisierul se afla deja in directorul furnizat!"
 					else 
 						mv "$nume_fis" "$dir_dest"
                                                 echo "Fisierul a fost mutat cu succes"
 					fi
-
-					else 
-						log "Directorul furnizat nu exista!" 
-					fi
-					break
-					;;	
+				    else 
+					log "Directorul furnizat nu are permisiunile necesare"
+				    fi
+				else 
+					log "Directorul furnizat nu exista!" 
+				fi
+				break
+				;;	
 			"Mutare fisier in github")
 					cd "$(dirname "$nume_fis")"
 					git init
@@ -161,7 +164,7 @@ monitorizare(){
 			;;
 
 		7)
-			filtrare_procese()
+			filtrare_procese
 			;;
 		
 		*)
@@ -181,9 +184,11 @@ config(){
 	    opt3="Adaugare linie de ### DEPRECATED ### pe prima linie a fisierelor"
 	    opt4="Luare permisiune executare"
 	    opt5="Arhivare fisiere"
+	    opt6="Spatiu disc"
+	    opt7="Filtrare procese"
 	    optEXIT="Iesire"
 
-	    select optiune in "$opt1" "$opt2" "$opt3" "$opt4" "$opt5" "$optEXIT"; do
+	    select optiune in "$opt1" "$opt2" "$opt3" "$opt4" "$opt5" "$opt6" "$opt7" "$optEXIT"; do
 	    	case $REPLY in
 	           1)	# Stergere fisiere
 					monitorizare $1 1 
@@ -199,6 +204,7 @@ config(){
 					echo "Monitorizarea directorului $1 a inceput"
 	                ;;
 	            4)
+			
 	            	monitorizare $1 4
 	            	echo "Monitorizarea directorului $1 a inceput"
 	                ;;
