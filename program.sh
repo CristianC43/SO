@@ -112,28 +112,6 @@ cautare(){
 		fi
 }
 
-spatiu_disc() {
-     #Salvam valoarea spatiului disponibil pe disc in var folosind comenzile df -m pentru a obtine informatiile in MB despre utilizarea spatiului pe disc, head -n 2 pentru utiliza doar primele 2 linii si tail -n 1 pentru ca avem nevoie doar de ultima linie si cut pentru a prelua exact valoare de care avem nevoie
-      var=$(df -m |head -n 2 | tail -n 1 | tr -s ' ' | cut -d ' ' -f 4) 
-     
-     #Salvam valoarea spatiului total de pe disc in var2
-      var2=$(df -m |head -n 2 | tail -n 1 | tr -s ' ' |  cut -d ' ' -f 2) 
-
-    #Pragul reprezinta 10% din spatiul total
-      prag=$(($var2/10))
-
-      if [ $var -lt $prag ]; then
-             echo "Spatiul pe disc este insuficient!"
-      else
-             echo "Spatiul pe disc este suficient! Spatiu liber: $var MB"
-      fi
-}
-
-filtrare_procese() {
-#Filtrarea proceselor ce folosesc peste 100 MB de RAM si afisarea lor in format tabelar
-ps aux | awk '$6 > 100000 {printf "%-10s %-10s %-10s %-10s\n", $1, $2, $4, $11}' | column -t                
-}
-
 # Functie de monitorizare
 # Parametri:
 # $1 - path ul
@@ -152,7 +130,7 @@ monitorizare(){
 			(crontab -l 2>>out.log; echo "0 20 * * 1 find $1 -mtime +60 -type f -exec sed -i '1s/^/#### DEPRECATED ####\n/' {} \;") | crontab - 
 			;;
 		4)
-			(crontab -l 2>>out.log; echo "9 1 * * 2 find $1 -mtime +1 -type f -exec chmod u-x,g-x,o-x {} \;") | crontab -	
+			(crontab -l 2>>out.log; echo "0 20 * * 1 find $1 -mtime +60 -type f -exec chmod u-x,g-x,o-x {} \;") | crontab -	
 			;;
 		5)
 			test -f archive.tar || touch archive.tar # Se va creea o arhiva daca nu exista deja
@@ -160,11 +138,13 @@ monitorizare(){
 			;;			
 		
 		6) 
-			spatiu_disc
+		 	(crontab -l 2>>out.log; echo "0 20 * * 1 find $1 -mtime +6 -size +1c -type f -exec rm {} \;") | crontab -
 			;;
 
 		7)
-			filtrare_procese
+			dir_nou="$1/backup"
+			mkdir -p $dir_nou
+			(crontab -l 2>>out.log; echo "0 20 * * 1 find $1 -mtime +60 -type f -exec cp {} $dir_nou \;") | crontab -
 			;;
 		
 		*)
@@ -321,7 +301,6 @@ else
                 fi
 		;;
 
-	#Mai trebuie modificat cu functiile care o sa se adauge
 	-u|--usage) 
 		echo "Utilizare: ./program [-h|--help] [--debug on|off] [--cautare path] [--mutare] [--config path] [--monitorizare path tip_comanda] [--usage]"					
 		shift		
