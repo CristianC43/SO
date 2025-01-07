@@ -109,6 +109,27 @@ cautare(){
 		fi
 }
 
+spatiu_disc() {
+     #Salvam valoarea spatiului disponibil pe disc in var folosind comenzile df -m pentru a obtine informatiile in MB despre utilizarea spatiului pe disc, head -n 2 pentru utiliza doar primele 2 linii si tail -n 1 pentru ca avem nevoie doar de ultima linie si cut pentru a prelua exact valoare de care avem nevoie
+      var=$(df -m |head -n 2 | tail -n 1 | tr -s ' ' | cut -d ' ' -f 4) 
+     
+     #Salvam valoarea spatiului total de pe disc in var2
+      var2=$(df -m |head -n 2 | tail -n 1 | tr -s ' ' |  cut -d ' ' -f 2) 
+
+    #Pragul reprezinta 10% din spatiul total
+      prag=$(($var2/10))
+
+      if [ $var -lt $prag ]; then
+             echo "Spatiul pe disc este insuficient!"
+      else
+             echo "Spatiul pe disc este suficient! Spatiu liber: $var MB"
+      fi
+}
+
+filtrare_procese() {
+#Filtrarea proceselor ce folosesc peste 100 MB de RAM si afisarea lor in format tabelar
+ps aux | awk '$6 > 100000 {printf "%-10s %-10s %-10s %-10s\n", $1, $2, $4, $11}' | column -t                
+}
 
 # Functie de monitorizare
 # Parametri:
@@ -134,6 +155,15 @@ monitorizare(){
 			test -f archive.tar || touch archive.tar # Se va creea o arhiva daca nu exista deja
 			(crontab -l 2>>out.log; echo "0 20 * * 1 find $1 -mtime +60 -type f -exec tar -rvf archive.tar {} \;") | crontab -
 			;;			
+		
+		6) 
+			spatiu_disc
+			;;
+
+		7)
+			filtrare_procese()
+			;;
+		
 		*)
 			log "Optiune invalida"
 			;;
@@ -148,7 +178,7 @@ config(){
 	    echo "Lista configurari monitorizare:"
 	    opt1="Stergere fisiere"
 	    opt2="Redenumire fisiere extensia .old"
-	    opt3="Adaugare linie de ### DEPERCATED ### pe prima linie a fisierelor"
+	    opt3="Adaugare linie de ### DEPRECATED ### pe prima linie a fisierelor"
 	    opt4="Luare permisiune executare"
 	    opt5="Arhivare fisiere"
 	    optEXIT="Iesire"
@@ -176,11 +206,19 @@ config(){
 	            	monitorizare $1 5
 	           	echo "Monitorizarea directorului $1 a inceput"
 	                ;;
-	            6)	# Iesire
+	            
+		    8)	# Iesire
 	            	echo "Iesire"
 			break
 	                ;;
 
+		    6)
+			monitorizare $1 6
+			;;
+		    
+		    7)
+			monitorizare $1 7
+			;;
 	            *)
 	                log "Cod de configurare invalid" >&2
 	                ;;
@@ -191,7 +229,7 @@ config(){
 # Main
 debug_mode="off"
 if [[ $# -eq 0 ]]; then
-    # Rularea programului normala
+    # Rularea programului fara argumente pe linia de comanda 
 	opt1="Gasire fisiere vechi"
 	opt2="Mutare fisiere"
 	opt3="Monitorizare fisiere"
@@ -266,7 +304,7 @@ else
 		mutare
 		shift
 		;;
-	  --config)
+	    --config)
 		shift
                 if [ "$1" != "" ]; then
                         config "$1"
