@@ -216,11 +216,13 @@ config(){
 debug_mode="off"
 if [[ $# -eq 0 ]]; then
     # Rularea programului fara argumente pe linia de comanda 
+while true; do
 	opt1="Gasire fisiere vechi"
 	opt2="Mutare fisiere"
 	opt3="Monitorizare fisiere"
 	opt4="Iesire"
 	# Meniul principal
+	echo "Selectati o optiune din cele de mai jos!"
 	select optiune in "$opt1" "$opt2" "$opt3" "$opt4"; do
 		case $REPLY in
 			1)  # Gasire fisiere vechi
@@ -233,9 +235,11 @@ if [[ $# -eq 0 ]]; then
 	        		read data_in
 					cautare $path $data_in
 				fi
+				break
 				;;
 			2)  # Mutare fisiere
-					mutare
+				mutare
+				break
 				;;
 			3)	# Monitorizare
 				echo "Introduce path ul unui director"
@@ -245,16 +249,20 @@ if [[ $# -eq 0 ]]; then
 				else
 					config $path
 				fi
+				break
 				;;
 			4)	# Iesire
 				exit 0
 				;;
 			*)  # Altfel
 				echo "Comanda invalida" >&2
+				break
 				;;
 	    esac
 	done
+done   
 else
+
     # Rularea programului cu argumente pe linia de comanda
 	 ARGS=$(getopt -o hu -l help,debug:,cautare:,mutare,config:,usage -- "$@")
  eval set -- "$ARGS"
