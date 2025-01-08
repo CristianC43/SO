@@ -17,7 +17,7 @@ select optiune in "Mutare fisier in alt director" "Mutare fisier in github" "Ies
             read nume_fis
 	
   	    if [[ -f $nume_fis && ! -z $nume_fis ]]; then
-		echo "Selectati o optiune din cele de mai jos!"
+		log "Fisierul exista!"
    	    else
 		 log "Nu exista un fisier cu acest nume!"	
 		 break
