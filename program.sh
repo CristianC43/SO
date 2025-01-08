@@ -1,3 +1,4 @@
+#!/bin/bash
 log() {
 	if [[ "$debug_mode" == "on" ]]; then
 		echo "$1"
